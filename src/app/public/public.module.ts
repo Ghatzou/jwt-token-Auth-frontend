@@ -7,6 +7,7 @@ import { AppRoutingModule } from '../app-routing.module';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { SignupComponent } from './signup/signup.component';
+import { HttpRoutesService } from '../Services/http-routes.service';
 
 
 
@@ -22,6 +23,7 @@ import { SignupComponent } from './signup/signup.component';
     AppRoutingModule,
     FormsModule,
     HttpClientModule
-  ]
+  ],
+  providers: [HttpRoutesService]
 })
 export class PublicModule { }

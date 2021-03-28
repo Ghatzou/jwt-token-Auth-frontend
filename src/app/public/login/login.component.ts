@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { HttpRoutesService } from 'src/app/Services/http-routes.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ export class LoginComponent implements OnInit {
   };
 
   //methodes
-  constructor(private http:HttpClient) { 
+  constructor(private httpRoutesService: HttpRoutesService) { 
     //
   }
 
@@ -23,8 +24,7 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    return this.http.post('http://repos.local:8000/api/auth/login',
-    this.form).subscribe(
+    return this.httpRoutesService.login(this.form).subscribe(
      data => console.log(data),
      error => console.log(error)
    );

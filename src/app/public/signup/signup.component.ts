@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { HttpRoutesService } from 'src/app/Services/http-routes.service';
 
 @Component({
   selector: 'app-signup',
@@ -20,7 +21,7 @@ export class SignupComponent implements OnInit {
   public error : any = [];
 
   //methodes
-  constructor(private http: HttpClient) {
+  constructor(private httpRoutesService: HttpRoutesService) {
     //
   }
 
@@ -28,8 +29,7 @@ export class SignupComponent implements OnInit {
   }
 
   onSubmit() {
-    return this.http.post('http://repos.local:8000/api/auth/register',
-      this.form).subscribe(
+    return this.httpRoutesService.register(this.form).subscribe(
         data => console.log(data),
         (error) => {
           this.error = error.error.errors;
