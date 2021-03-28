@@ -8,8 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { SignupComponent } from './signup/signup.component';
 import { HttpRoutesService } from '../Services/http-routes.service';
-
-
+import { TokenService } from '../Services/token.service';
 
 @NgModule({
   declarations: [
@@ -24,6 +23,9 @@ import { HttpRoutesService } from '../Services/http-routes.service';
     FormsModule,
     HttpClientModule
   ],
-  providers: [HttpRoutesService]
+  providers: [
+    HttpRoutesService,
+    TokenService
+  ]
 })
 export class PublicModule { }

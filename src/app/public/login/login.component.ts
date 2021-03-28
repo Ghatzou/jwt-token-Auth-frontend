@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { HttpRoutesService } from 'src/app/Services/http-routes.service';
+import { TokenService } from 'src/app/Services/token.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,10 @@ export class LoginComponent implements OnInit {
   };
 
   //methodes
-  constructor(private httpRoutesService: HttpRoutesService) { 
+  constructor(
+    private httpRoutesService: HttpRoutesService,
+    private token: TokenService
+  ){ 
     //
   }
 
@@ -25,9 +28,13 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     return this.httpRoutesService.login(this.form).subscribe(
-     data => console.log(data),
+     data => this.handleResponse(data),
      error => console.log(error)
    );
+  }
+
+  handleResponse(data) {
+    this.token.handle(data.access_token);
   }
 
 }
