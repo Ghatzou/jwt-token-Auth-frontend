@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpRoutesService } from 'src/app/Services/http-routes.service';
+import { TokenService } from 'src/app/Services/token.service';
 
 @Component({
   selector: 'app-signup',
@@ -18,10 +20,14 @@ export class SignupComponent implements OnInit {
     password_confirmation: null
   };
 
-  public error : any = [];
+  public error: any = [];
 
   //methodes
-  constructor(private httpRoutesService: HttpRoutesService) {
+  constructor(
+    private httpRoutesService: HttpRoutesService,
+    private token: TokenService,
+    private router: Router
+  ) {
     //
   }
 
@@ -30,12 +36,18 @@ export class SignupComponent implements OnInit {
 
   onSubmit() {
     return this.httpRoutesService.register(this.form).subscribe(
-        data => console.log(data),
-        (error) => {
-          this.error = error.error.errors;
-          console.log(this.error);
-        }
-      );
+      data => this.handleResponse(data),
+      (error) => {
+        this.error = error.error.errors;
+        console.log(this.error);
+      }
+    );
+  }
+
+  handleResponse(data) {
+    if (this.token.handle(data.access_token)) {
+      this.router.navigateByUrl('/home')
+    }
   }
 
 }
