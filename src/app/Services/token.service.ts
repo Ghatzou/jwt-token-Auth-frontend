@@ -57,4 +57,8 @@ export class TokenService {
   decodePayload(payload) {
     return JSON.parse(atob(payload));
   }
+
+  loggedIn(): boolean {
+    return this.isValid();
+  }
 }

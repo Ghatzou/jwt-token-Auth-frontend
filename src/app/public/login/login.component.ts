@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/Services/auth.service';
 import { HttpRoutesService } from 'src/app/Services/http-routes.service';
 import { TokenService } from 'src/app/Services/token.service';
 
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private httpRoutesService: HttpRoutesService,
     private token: TokenService,
-    private router: Router
+    private router: Router,
+    private auth: AuthService
   ){ 
     //
   }
@@ -36,7 +38,9 @@ export class LoginComponent implements OnInit {
   }
 
   handleResponse(data) {
-    if(this.token.handle(data.access_token)) {
+    let isValidToken = this.token.handle(data.access_token);
+    if(isValidToken) {
+      this.auth.changeAuthStatus(true);
       this.router.navigateByUrl('/home')
     }
   }
