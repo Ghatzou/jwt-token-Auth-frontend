@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpRoutesService } from 'src/app/Services/http-routes.service';
 import { TokenService } from 'src/app/Services/token.service';
 
@@ -18,7 +19,8 @@ export class LoginComponent implements OnInit {
   //methodes
   constructor(
     private httpRoutesService: HttpRoutesService,
-    private token: TokenService
+    private token: TokenService,
+    private router: Router
   ){ 
     //
   }
@@ -34,7 +36,9 @@ export class LoginComponent implements OnInit {
   }
 
   handleResponse(data) {
-    this.token.handle(data.access_token);
+    if(this.token.handle(data.access_token)) {
+      this.router.navigateByUrl('/home')
+    }
   }
 
 }
