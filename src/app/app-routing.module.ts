@@ -1,23 +1,40 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './public/home/home.component';
-import { LoginComponent } from './public/login/login.component';
-import { PublicComponent } from './public/public.component';
-import { SignupComponent } from './public/signup/signup.component';
-import { SecureComponent } from './secure/secure.component';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './login/login.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { AfterLoginService } from './Services/after-login.service';
+import { BeforeLoginService } from './Services/before-login.service';
+import { SignupComponent } from './signup/signup.component';
 
 const routes: Routes = [
   {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [BeforeLoginService]
+  },
+  {
+    path: 'signup',
+    component: SignupComponent,
+    canActivate: [BeforeLoginService]
+  }
+  ,
+  {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [AfterLoginService]
+  },
+  {
     path: '',
-     component: PublicComponent,
-     children: [
-       {path: '', component: HomeComponent},
-       {path: 'home', component: HomeComponent},
-       {path: 'login', component: LoginComponent},
-       {path: 'signup', component: SignupComponent}
-     ]
-    },
-  {path: 'secure', component: SecureComponent}
+    redirectTo: '/home',
+    pathMatch: 'full'
+  }
+  ,
+  {
+    path: '**',
+    component: PageNotFoundComponent
+  }
 ];
 
 @NgModule({
