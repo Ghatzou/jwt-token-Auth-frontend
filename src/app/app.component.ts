@@ -1,31 +1,32 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from './Services/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
   title = 'RePos-frontend';
 
   public loggedIn: boolean;
+  private isLoggedInSubscription: Subscription = null;
 
-  constructor(
-    private auth: AuthService,
-    private router: Router
-  ) {
-
-  }
+  constructor(private auth: AuthService) {}
 
   ngOnInit(): void {
-    this.auth.authStatus.subscribe(value => this.loggedIn = value);
+    this.isLoggedInSubscription = this.auth
+      .isLoggedInAsObservable()
+      .subscribe((value) => (this.loggedIn = value));
+  }
+
+  ngOnDestroy(): void {
+    if (this.isLoggedInSubscription) this.isLoggedInSubscription.unsubscribe();
   }
 
   logout(e) {
     e.preventDefault();
-    this.auth.changeAuthStatus(false);
-    this.router.navigateByUrl('/home');
+    this.auth.logout();
   }
 }
