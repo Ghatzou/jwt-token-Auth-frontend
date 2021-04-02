@@ -23,7 +23,6 @@ export class TokenService {
     this._validTokenSubscription = this._validTokenSubject.subscribe(
       (next: boolean) => {
         this.validToken = next;
-        console.log(this.validToken);
       }
     );
   }
