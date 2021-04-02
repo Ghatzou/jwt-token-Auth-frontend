@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
-import { TokenService } from './token.service';
+import { map } from 'rxjs/internal/operators/map';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,16 +10,20 @@ import { TokenService } from './token.service';
 export class BeforeLoginService implements CanActivate {
 
   constructor(
-    private token: TokenService,
+    private auth: AuthService,
     private router: Router
   ) { }
   
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
-    const loggedIn = this.token.loggedIn();
-    if (!loggedIn) {
-      this.router.navigateByUrl('/login');
-      return false;
-    }
-    return true;
+    return this.auth.isLoggedInAsObservable().pipe(
+      map((loggedIn)=> {
+        if (!loggedIn) {
+          this.router.navigateByUrl('/login');
+          return false;
+        }
+        return true;
+      })
+    )
+
   }
 }

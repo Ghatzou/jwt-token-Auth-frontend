@@ -1,24 +1,32 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  CanActivate,
+  Router,
+  RouterStateSnapshot,
+  UrlTree,
+} from '@angular/router';
 import { Observable } from 'rxjs';
-import { TokenService } from './token.service';
+import { map } from 'rxjs/internal/operators/map';
+import { AuthService } from './auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AfterLoginService implements CanActivate {
+  constructor(private auth: AuthService, private router: Router) {}
 
-  constructor(
-    private token: TokenService,
-    private router: Router
-  ) { }
-
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
-    const loggedIn = this.token.loggedIn();
-    if (loggedIn) {
-      this.router.navigate(['home']);
-      return false;
-    }
-    return true;
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {  
+    return this.auth.isLoggedInAsObservable().pipe(
+      map((loggedIn) => {
+        console.log('canActivate');
+        console.log(loggedIn);
+        if (loggedIn) {
+          this.router.navigate(['home']);
+          return false;
+        }
+        return true;
+      })
+    );
   }
 }
