@@ -16,12 +16,18 @@ import { AuthService } from './auth.service';
 export class AfterLoginService implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {  
-    return this.auth.isLoggedInAsObservable().pipe(
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ):
+    | boolean
+    | UrlTree
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree> {
+    return this.auth.isLoginValid().pipe(
       map((loggedIn) => {
-        console.log('canActivate');
-        console.log(loggedIn);
         if (loggedIn) {
+          console.log("try to redirect to 'home' because invalide auth autorization");
           this.router.navigate(['home']);
           return false;
         }
