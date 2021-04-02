@@ -25,7 +25,7 @@ export class HttpRoutesService {
     return this.http.post(`${this.baseUrl}/auth/refresh`, null);
   }
 
-  check() {
-    return this.http.post(`${this.baseUrl}/auth/check`, null);
+  ping() {
+    return this.http.post(`${this.baseUrl}/auth/ping`, null);
   }
 }
