@@ -16,7 +16,6 @@ let requestNumber = 0;
   providedIn: 'root',
 })
 export class TokenInterceptorService implements HttpInterceptor {
-
   constructor(private auth: AuthService) {}
 
   intercept(
@@ -26,7 +25,7 @@ export class TokenInterceptorService implements HttpInterceptor {
     requestNumber++;
     console.log('request number : ', requestNumber);
     console.log('request : ', request);
-    
+
     return next.handle(this.addToken(request)).pipe(
       catchError((error) => {
         console.log('error in request number : ', requestNumber);
@@ -48,6 +47,9 @@ export class TokenInterceptorService implements HttpInterceptor {
             // In this case we want to logout user and to redirect it to login page
 
             if (request.url.includes('refresh')) {
+              console.log('logout from refresh request !');
+              console.log(request.url);
+              
               this.auth.logout();
             }
 
@@ -68,26 +70,14 @@ export class TokenInterceptorService implements HttpInterceptor {
               switchMap(() => next.handle(request))
             );
           } else {
-            this.auth.refreshTokenInProgress = true;
-
-            // Set the refreshTokenSubject to null so that subsequent API calls will wait until the new token has been retrieved
-            this.auth.refreshTokenSubject.next(null);
-
             // Call auth.refreshAccessToken(this is an Observable that will be returned)
             return this.auth.refreshAccessToken().pipe(
               take(1),
               switchMap((token: any) => {
-                //When the call to refreshToken completes we reset the refreshTokenInProgress to false
-                //for the next time the token needs to be refreshed
-                this.auth.refreshTokenInProgress = false;
-                this.auth.refreshTokenSubject.next(token);
                 console.log(`token refreshed : `);
-
-                return next.handle(request);
+                return next.handle(this.addToken(request));
               }),
               catchError((err: any) => {
-                this.auth.refreshTokenInProgress = false;
-                this.auth.refreshTokenSubject.error(err);
                 return throwError(err);
               })
             );

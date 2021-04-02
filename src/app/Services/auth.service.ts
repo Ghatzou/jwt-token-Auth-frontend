@@ -94,40 +94,55 @@ export class AuthService {
   /**
    * refresh the token from server then replace the token in client side
    *
-   * @returns void
+   * @returns Observable<any>
    *
    *
    */
   refreshAccessToken(): Observable<any> {
     console.log('try to refresh token from server side ...');
 
-    if (this.token.get()) {
-      this.refreshTokenServer()
-        .pipe(take(1))
-        .subscribe(
-          (data: any) => {
-            console.log('token successfuly refreshed, more details : ', data);
-            //we check the validity of the token in the refreshtokenclient
-            this.token.set(data.access_token);
-            let valid = this.token.isValid();
-            if (valid != 1) this.logout();
-          },
-          (err) => {
-            console.log('refresh access token error : ', err);
-            this.logout();
-          }
-        );
-    } else {
-      console.log('no token to be refreshed !');
-      this.logout();
-    }
+    this.refreshTokenInProgress = true;
+    // Set the refreshTokenSubject to null so that subsequent API calls will wait until the new token has been retrieved
+    this.refreshTokenSubject.next(null);
 
-    //return Result Of Refresh As an Observable
-    let tokenAsObservable = new Observable((Subscriber) => {
-      if (this.token.isTokenValid()) Subscriber.next(this.token.get());
-      else Subscriber.error('refresh token problem.');
+    return new Observable((obs) => {
+      if (this.token.get()) {
+        this.refreshTokenServer()
+          .pipe(take(1))
+          .subscribe(
+            (data: any) => {
+              console.log('token successfuly refreshed, more details : ', data);
+              //When the call to refreshToken completes we reset the refreshTokenInProgress to false
+              //for the next time the token needs to be refreshed
+              this.refreshTokenInProgress = false;
+              this.refreshTokenSubject.next(this.token.get());
+              //we check the validity of the token in the refreshtokenclient
+              this.token.set(data.access_token);
+              let valid = this.token.isValid();
+              if (valid !== 1) {
+                this.logout();
+                obs.error('refresh token problem.');
+                this.refreshTokenInProgress = false;
+                this.refreshTokenSubject.error('refresh token problem.');
+              } else {
+                obs.next(this.token.get());
+              }
+            },
+            (err) => {
+              console.log('refresh token problem. ');
+              this.logout();
+              obs.error(err);
+              this.refreshTokenInProgress = false;
+              this.refreshTokenSubject.error(err);
+            }
+          );
+      } else {
+        this.logout();
+        obs.error('no token to be refreshed !');
+        this.refreshTokenInProgress = false;
+        this.refreshTokenSubject.error('no token to be refreshed !');
+      }
     });
-    return tokenAsObservable;
   }
 
   /**

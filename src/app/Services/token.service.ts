@@ -8,6 +8,7 @@ export class TokenService {
   private iss = {
     login: 'http://repos.local:8000/api/auth/login',
     register: 'http://repos.local:8000/api/auth/register',
+    refresh: 'http://repos.local:8000/api/auth/refresh'
   };
 
   //valid token set to false when starting the app
@@ -67,10 +68,11 @@ export class TokenService {
         } else if (isTokenExpired) {
           state = 0;
         }
+        else state = -1;
       } else state = -1;
     } else state = -1;
 
-    if (state == 1) {
+    if (state === 1) {
       this.changeTokenStatut(true);
     } else {
       // (state === -1 || state === 0)
