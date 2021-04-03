@@ -5,11 +5,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ## After Cloning
 run this commands :
 
-composer install
-php artisan key:generate
-php artisan jwt:secret
-change .env.exemple to .env
-config .env
+npm install
 
 ## Development server
 
